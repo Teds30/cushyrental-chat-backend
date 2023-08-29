@@ -12,12 +12,19 @@ const Room = new Schema(
             type: Number,
             required: true,
         },
+        landlord_id: {
+            type: Number,
+            required: true,
+        },
+        tenant_id: {
+            type: Number,
+            required: true,
+        },
         request_status: {
             type: String,
             required: false,
             default: '',
         },
-        participants: [{ user_id: Number }],
         status: {
             type: Number,
             required: false,
