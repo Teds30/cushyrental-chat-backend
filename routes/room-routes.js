@@ -1,19 +1,17 @@
 const express = require('express')
 const { check } = require('express-validator')
-
 const router = express.Router()
 
 const roomController = require('../controllers/room-controllers')
 
 router.get('/rooms', roomController.getRooms)
-router.post(
-    '/rooms',
-    [
-        check('name').not().isEmpty(),
-        check('user_id').not().isEmpty(),
-        check('recipient_id').not().isEmpty(),
-    ],
-    roomController.createRoom
+router.get('/rooms/:room_id', roomController.getRoomDetails)
+router.get('/chats/:room_id', roomController.getRoomMessages)
+router.get('/last-chat/:room_id', roomController.getRoomLastMessage)
+router.get(
+    '/chats-count/:room_id/:user_id',
+    roomController.getRoomMessagesCount
 )
+router.patch('/read-chats/:room_id', roomController.readMessages)
 
 module.exports = router
