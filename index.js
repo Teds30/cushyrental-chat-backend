@@ -7,6 +7,9 @@ const cors = require('cors')
 const { Server } = require('socket.io')
 
 const app = express()
+
+app.use(bodyParser.json())
+
 app.use(cors())
 const server = http.createServer(app)
 const io = new Server(server, {
@@ -21,19 +24,25 @@ const io = new Server(server, {
 const sockets = require('./socket/sockets')
 const roomsRoute = require('./routes/room-routes')
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.8qo87aw.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
-mongoose.connect(uri)
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cushyrental.xuzxbkh.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+// mongoose.connect(uri)
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html')
 })
 
-app.use('/', roomsRoute)
-
 io.on('connection', sockets)
+app.use('/', roomsRoute)
 
 const PORT = process.env.PORT || 4000
 
-server.listen(PORT, () => {
-    console.log(`Server is running at port ${PORT}`)
-})
+mongoose
+    .connect(uri)
+    .then(() => {
+        server.listen(PORT, () => {
+            console.log(`Server is running at port ${PORT}`)
+        })
+    })
+    .catch((err) => {
+        console.log(err)
+    })
