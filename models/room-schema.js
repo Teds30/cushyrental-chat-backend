@@ -20,6 +20,10 @@ const Room = new Schema(
             type: Number,
             required: true,
         },
+        slots: {
+            type: Number,
+            required: false,
+        },
         request_status: {
             type: String,
             required: false,

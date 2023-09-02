@@ -51,7 +51,7 @@ module.exports = class RoomController extends BaseController {
         this.socket.emit('room-removed', { room_id })
     }
 
-    availUnit = async ({ room_id, unit_id, request_status, name }) => {
+    availUnit = async ({ room_id, slots, unit_id, request_status, name }) => {
         // this.socket.emit('message-sent', { message: msg })
         // let skt = this.socket.broadcast
         // skt.to(room_id).emit('message-sent', { message: msg })
@@ -59,6 +59,7 @@ module.exports = class RoomController extends BaseController {
 
         if (request_status === 'avail') {
             unit_avail.request_status = 'pending'
+            unit_avail.slots = slots
 
             this.socket.broadcast.to(room_id).emit('unit-avail-pending')
             this.socket.emit('unit-avail-pending')
@@ -71,6 +72,7 @@ module.exports = class RoomController extends BaseController {
         }
         if (request_status === 'cancel') {
             unit_avail.request_status = ''
+            unit_avail.slots = 0
             this.socket.broadcast.to(room_id).emit('unit-avail')
             this.socket.emit('unit-avail')
 
