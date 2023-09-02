@@ -24,7 +24,6 @@ const getInquiries = async (req, res, next) => {
 
         let i
         for (i = 0; i < rooms.length; i++) {
-            console.log(rooms[0].name)
             let user_data = await expandUser(rooms[0].tenant_id)
 
             const expanded = { room: rooms[i], user: user_data }
