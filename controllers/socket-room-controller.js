@@ -51,7 +51,14 @@ module.exports = class RoomController extends BaseController {
         this.socket.emit('room-removed', { room_id })
     }
 
-    availUnit = async ({ room_id, slots, unit_id, request_status, name }) => {
+    availUnit = async ({
+        room_id,
+        slots,
+        unit_name = '',
+        request_status,
+        name,
+        user_id = null,
+    }) => {
         // this.socket.emit('message-sent', { message: msg })
         // let skt = this.socket.broadcast
         // skt.to(room_id).emit('message-sent', { message: msg })
@@ -64,10 +71,20 @@ module.exports = class RoomController extends BaseController {
             this.socket.broadcast.to(room_id).emit('unit-avail-pending')
             this.socket.emit('unit-avail-pending')
 
+            this.socket.broadcast.to(user_id).emit('notification-update')
+
             this.sendMessage({
                 message: `${name} requested to avail the unit.`,
                 is_system: true,
                 room_id,
+            })
+
+            this.sendNotification({
+                redirect_url: `/chats/${room_id}`,
+                title: 'Tenant Request',
+                message: `${name} requested to avail ${unit_name}.`,
+                room_id,
+                user_id: user_id,
             })
         }
         if (request_status === 'cancel') {
@@ -86,11 +103,20 @@ module.exports = class RoomController extends BaseController {
             unit_avail.request_status = 'accepted'
             this.socket.broadcast.to(room_id).emit('unit-avail-accepted')
             this.socket.emit('unit-avail-accepted')
+            this.socket.broadcast.to(user_id).emit('notification-update')
 
             this.sendMessage({
                 message: `${name} accepted the request.`,
                 is_system: true,
                 room_id,
+            })
+
+            this.sendNotification({
+                redirect_url: `/chats/${room_id}`,
+                title: 'Rental Approved',
+                message: `${name} accepted the request.`,
+                room_id,
+                user_id: user_id,
             })
         }
         if (request_status === 'reject') {
@@ -98,14 +124,64 @@ module.exports = class RoomController extends BaseController {
             this.socket.broadcast.to(room_id).emit('unit-avail')
             this.socket.emit('unit-avail')
 
+            this.socket.broadcast.to(user_id).emit('notification-update')
+
             this.sendMessage({
                 message: `${name} rejected the request.`,
                 is_system: true,
                 room_id,
             })
+
+            this.sendNotification({
+                redirect_url: `/chats/${room_id}`,
+                title: 'Rental Request Rejected',
+                message: `${name} rejected your rental request for ${unit_name}.`,
+                room_id,
+                user_id: user_id,
+            })
         }
 
         unit_avail.save()
         // await Room.updateOne({ room_id, status: 0 })
+    }
+
+    sendNotification = async ({
+        redirect_url = '',
+        title = '',
+        message = '',
+        user_id,
+    }) => {
+        try {
+            const res1 = await fetch(
+                `${process.env.MAIN_BACKEND_URL}/api/user_notifications/${user_id}`
+            )
+            const landlord_notifs = await res1.json()
+
+            console.log(landlord_notifs[0].message)
+            console.log(message)
+
+            if (landlord_notifs[0].message !== message) {
+                const out = await fetch(
+                    '${process.env.MAIN_BACKEND_URL}/api/notifications',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            title: title,
+                            message: message,
+                            redirect_url: redirect_url,
+                            user_id: user_id,
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                )
+                const data = await out.json()
+            }
+
+            // res.json({ test: data })
+        } catch (err) {
+            console.log(err)
+        }
     }
 }

@@ -23,6 +23,7 @@ const io = new Server(server, {
 
 const sockets = require('./socket/sockets')
 const roomsRoute = require('./routes/room-routes')
+const notificationRoute = require('./routes/notification-routes')
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cushyrental.xuzxbkh.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
 // mongoose.connect(uri)
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', sockets)
 app.use('/', roomsRoute)
+app.use('/', notificationRoute)
 
 const PORT = process.env.PORT || 4000
 

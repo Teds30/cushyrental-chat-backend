@@ -5,7 +5,8 @@ const router = express.Router()
 const roomController = require('../controllers/room-controllers')
 const landlordController = require('../controllers/landlord-controllers')
 
-router.get('/rooms', roomController.getRooms)
+router.post('/new-room', roomController.createRoom)
+router.post('/rooms', roomController.getRooms)
 router.get('/rooms/:room_id', roomController.getRoomDetails)
 router.get('/chats/:room_id', roomController.getRoomMessages)
 router.get('/last-chat/:room_id', roomController.getRoomLastMessage)
@@ -16,5 +17,7 @@ router.get(
 router.patch('/read-chats/:room_id', roomController.readMessages)
 
 router.get('/inquiries/:landlord_id', landlordController.getInquiries)
+
+router.get('/find-existing-room/:unit_id/:tenant_id', roomController.findExistingRoom)
 
 module.exports = router

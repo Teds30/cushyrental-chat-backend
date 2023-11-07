@@ -2,12 +2,16 @@ const RoomController = require('../controllers/socket-room-controller')
 const MessageController = require('../controllers/socket-message-controller')
 const TypingController = require('../controllers/socket-typing-controller')
 const fs = require('fs')
+const NotificationController = require('../controllers/socket-notification-contoller')
 
 const sockets = (socket) => {
     console.log('connected')
     const roomController = new RoomController(socket)
     const messageController = new MessageController(socket)
+    const notificationController = new NotificationController(socket)
     const typingController = new TypingController(socket)
+
+    socket.on('notification-join', notificationController.joinRoom)
 
     socket.on('room-join', roomController.joinRoom)
     socket.on('room-leave', roomController.leaveRoom)
