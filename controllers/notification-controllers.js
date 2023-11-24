@@ -8,23 +8,25 @@ const sendNotification = async (req, res, next) => {
         )
         const landlord_notifs = await res1.json()
 
-        console.log(landlord_notifs[0])
         if (
             !landlord_notifs[0].message ===
             `${tenant_name} is availing for ${unit_name}.`
         ) {
-            const out = await fetch(`${process.env.MAIN_BACKEND_URL}/api/notifications`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    title: 'Tenant Request',
-                    message: `${tenant_name} is availing for ${unit_name}.`,
-                    redirect_url: `/chats/${room_id}`,
-                    user_id: landlord_id,
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
+            const out = await fetch(
+                `${process.env.MAIN_BACKEND_URL}/api/notifications`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: 'Tenant Request',
+                        message: `${tenant_name} is availing for ${unit_name}.`,
+                        redirect_url: `/chats/${room_id}`,
+                        user_id: landlord_id,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            )
             const data = await out.json()
 
             res.json({ test: data })

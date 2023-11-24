@@ -81,8 +81,8 @@ module.exports = class RoomController extends BaseController {
 
             this.sendNotification({
                 redirect_url: `/chats/${room_id}`,
-                title: 'Tenant Request',
-                message: `${name} requested to avail ${unit_name}.`,
+                title: 'Request to Avail',
+                message: `${name} requested to avail ${unit_name}. Check your message now!`,
                 room_id,
                 user_id: user_id,
             })
@@ -111,13 +111,15 @@ module.exports = class RoomController extends BaseController {
                 room_id,
             })
 
+
             this.sendNotification({
                 redirect_url: `/chats/${room_id}`,
                 title: 'Rental Approved',
-                message: `${name} accepted the request.`,
+                message: `${name} accepted your rental request for ${unit_name}.`,
                 room_id,
                 user_id: user_id,
             })
+
         }
         if (request_status === 'reject') {
             unit_avail.request_status = ''
@@ -157,12 +159,13 @@ module.exports = class RoomController extends BaseController {
             )
             const landlord_notifs = await res1.json()
 
-            console.log(landlord_notifs[0].message)
-            console.log(message)
-
-            if (landlord_notifs[0].message !== message) {
+            if (
+                landlord_notifs.length === 0 ||
+                (landlord_notifs.length > 0 &&
+                    landlord_notifs[0].message !== message)
+            ) {
                 const out = await fetch(
-                    '${process.env.MAIN_BACKEND_URL}/api/notifications',
+                    `${process.env.MAIN_BACKEND_URL}/api/notifications`,
                     {
                         method: 'POST',
                         body: JSON.stringify({

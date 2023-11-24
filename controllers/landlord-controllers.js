@@ -20,11 +20,14 @@ const getInquiries = async (req, res, next) => {
     let rooms
     try {
         // room = await Room.distinct('tenant_id')
-        rooms = await Room.find({ landlord_id: req.params.landlord_id })
+        rooms = await Room.find({
+            landlord_id: req.params.landlord_id,
+            request_status: ' ',
+        })
 
         let i
         for (i = 0; i < rooms.length; i++) {
-            let user_data = await expandUser(rooms[0].tenant_id)
+            let user_data = await expandUser(rooms[i].tenant_id)
 
             const expanded = { room: rooms[i], user: user_data }
             out.push(expanded)
