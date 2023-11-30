@@ -65,11 +65,23 @@ const getRoomDetails = async (req, res, next) => {
         room = await Room.findOne({ _id: req.params.room_id })
         if (room) {
             const tenant_query = await fetch(
-                `${process.env.MAIN_BACKEND_URL}/api/users/${room.tenant_id}`
+                `${process.env.MAIN_BACKEND_URL}/api/users/${room.tenant_id}`,
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${req.params.token}`,
+                    },
+                }
             )
             const tenant_data = await tenant_query.json()
             const landlord_query = await fetch(
-                `${process.env.MAIN_BACKEND_URL}/api/users/${room.landlord_id}`
+                `${process.env.MAIN_BACKEND_URL}/api/users/${room.landlord_id}`,
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${req.params.token}`,
+                    },
+                }
             )
             const landlord_data = await landlord_query.json()
             res.json({

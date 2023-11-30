@@ -6,7 +6,12 @@ const getInquiries = async (req, res, next) => {
         let data
         try {
             const response = await fetch(
-                `${process.env.MAIN_BACKEND_URL}/api/users/${user_id}`
+                `${process.env.MAIN_BACKEND_URL}/api/users/${user_id}`,
+                {
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                }
             )
 
             data = await response.json()

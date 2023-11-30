@@ -4,7 +4,12 @@ const sendNotification = async (req, res, next) => {
     const { tenant_name, unit_name, room_id, landlord_id } = req.body
     try {
         const res1 = await fetch(
-            `${process.env.MAIN_BACKEND_URL}/api/user_notifications/${landlord_id}`
+            `${process.env.MAIN_BACKEND_URL}/api/user_notifications/${landlord_id}`,
+            {
+                headers: {
+                    Accept: 'application/json',
+                },
+            }
         )
         const landlord_notifs = await res1.json()
 
@@ -24,6 +29,7 @@ const sendNotification = async (req, res, next) => {
                     }),
                     headers: {
                         'Content-Type': 'application/json',
+                    Accept: 'application/json',
                     },
                 }
             )

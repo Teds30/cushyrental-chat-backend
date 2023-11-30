@@ -111,7 +111,6 @@ module.exports = class RoomController extends BaseController {
                 room_id,
             })
 
-
             this.sendNotification({
                 redirect_url: `/chats/${room_id}`,
                 title: 'Rental Approved',
@@ -119,7 +118,6 @@ module.exports = class RoomController extends BaseController {
                 room_id,
                 user_id: user_id,
             })
-
         }
         if (request_status === 'reject') {
             unit_avail.request_status = ''
@@ -155,7 +153,12 @@ module.exports = class RoomController extends BaseController {
     }) => {
         try {
             const res1 = await fetch(
-                `${process.env.MAIN_BACKEND_URL}/api/user_notifications/${user_id}`
+                `${process.env.MAIN_BACKEND_URL}/api/user_notifications/${user_id}`,
+                {
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                }
             )
             const landlord_notifs = await res1.json()
 
@@ -176,6 +179,7 @@ module.exports = class RoomController extends BaseController {
                         }),
                         headers: {
                             'Content-Type': 'application/json',
+                            Accept: 'application/json',
                         },
                     }
                 )
