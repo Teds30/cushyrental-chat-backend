@@ -10,6 +10,7 @@ const getInquiries = async (req, res, next) => {
                 {
                     headers: {
                         Accept: 'application/json',
+                        Authorization: `Bearer ${req.params.token}`,
                     },
                 }
             )
@@ -27,7 +28,7 @@ const getInquiries = async (req, res, next) => {
         // room = await Room.distinct('tenant_id')
         rooms = await Room.find({
             landlord_id: req.params.landlord_id,
-            request_status: ' ',
+            request_status: '',
         })
 
         let i

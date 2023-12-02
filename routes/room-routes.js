@@ -16,7 +16,7 @@ router.get(
 )
 router.patch('/read-chats/:room_id', roomController.readMessages)
 
-router.get('/inquiries/:landlord_id', landlordController.getInquiries)
+router.get('/inquiries/:landlord_id/token=:token', landlordController.getInquiries)
 
 router.get('/find-existing-room/:unit_id/:tenant_id', roomController.findExistingRoom)
 

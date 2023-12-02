@@ -10,7 +10,11 @@ const app = express()
 
 app.use(bodyParser.json())
 
-app.use(cors())
+app.use(
+    cors({
+        allowedHeaders: '*',
+    })
+)
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {

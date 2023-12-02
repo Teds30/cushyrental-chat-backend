@@ -2,6 +2,8 @@ const Room = require('../models/room-schema')
 const Message = require('../models/message-schema')
 const fetch = require('node-fetch')
 
+const { Headers } = fetch
+
 const createRoom = async (req, res, next) => {
     const { name, unit_id, landlord_id, tenant_id } = req.body
     let room
@@ -64,23 +66,26 @@ const getRoomDetails = async (req, res, next) => {
     try {
         room = await Room.findOne({ _id: req.params.room_id })
         if (room) {
+            const meta = {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${req.params.token}`,
+            }
+            const headers = new Headers(meta)
+            // console.log('Meta Headers: ', headers)
+
             const tenant_query = await fetch(
                 `${process.env.MAIN_BACKEND_URL}/api/users/${room.tenant_id}`,
                 {
-                    headers: {
-                        Accept: 'application/json',
-                        Authorization: `Bearer ${req.params.token}`,
-                    },
+                    headers: headers,
                 }
             )
             const tenant_data = await tenant_query.json()
             const landlord_query = await fetch(
                 `${process.env.MAIN_BACKEND_URL}/api/users/${room.landlord_id}`,
                 {
-                    headers: {
-                        Accept: 'application/json',
-                        Authorization: `Bearer ${req.params.token}`,
-                    },
+                    method: 'GET',
+                    headers: headers,
                 }
             )
             const landlord_data = await landlord_query.json()
