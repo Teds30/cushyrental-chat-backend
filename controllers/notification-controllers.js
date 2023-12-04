@@ -7,7 +7,9 @@ const sendNotification = async (req, res, next) => {
             `${process.env.MAIN_BACKEND_URL}/api/user_notifications/${landlord_id}`,
             {
                 headers: {
+                    'Content-Type': 'application/json',
                     Accept: 'application/json',
+                    Authorization: `Bearer ${req.params.token}`,
                 },
             }
         )
@@ -29,7 +31,8 @@ const sendNotification = async (req, res, next) => {
                     }),
                     headers: {
                         'Content-Type': 'application/json',
-                    Accept: 'application/json',
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${req.params.token}`,
                     },
                 }
             )
