@@ -58,10 +58,12 @@ module.exports = class RoomController extends BaseController {
         request_status,
         name,
         user_id = null,
+        token = '',
     }) => {
         // this.socket.emit('message-sent', { message: msg })
         // let skt = this.socket.broadcast
         // skt.to(room_id).emit('message-sent', { message: msg })
+
         const unit_avail = await Room.findById(room_id)
 
         if (request_status === 'avail') {
@@ -80,6 +82,7 @@ module.exports = class RoomController extends BaseController {
             })
 
             this.sendNotification({
+                token: token,
                 redirect_url: `/chats/${room_id}`,
                 title: 'Request to Avail',
                 message: `${name} requested to avail ${unit_name}. Check your message now!`,
@@ -112,6 +115,7 @@ module.exports = class RoomController extends BaseController {
             })
 
             this.sendNotification({
+                token: token,
                 redirect_url: `/chats/${room_id}`,
                 title: 'Rental Approved',
                 message: `${name} accepted your rental request for ${unit_name}.`,
@@ -133,6 +137,7 @@ module.exports = class RoomController extends BaseController {
             })
 
             this.sendNotification({
+                token: token,
                 redirect_url: `/chats/${room_id}`,
                 title: 'Rental Request Rejected',
                 message: `${name} rejected your rental request for ${unit_name}.`,
@@ -150,13 +155,16 @@ module.exports = class RoomController extends BaseController {
         title = '',
         message = '',
         user_id,
+        token = '',
     }) => {
         try {
             const res1 = await fetch(
                 `${process.env.MAIN_BACKEND_URL}/api/user_notifications/${user_id}`,
                 {
                     headers: {
+                        'Content-Type': 'application/json',
                         Accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             )
@@ -180,6 +188,7 @@ module.exports = class RoomController extends BaseController {
                         headers: {
                             'Content-Type': 'application/json',
                             Accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
                         },
                     }
                 )
