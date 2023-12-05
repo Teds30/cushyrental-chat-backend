@@ -28,7 +28,7 @@ const getRooms = async (req, res, next) => {
     try {
         rooms = await Room.find({
             $or: [{ landlord_id: userId }, { tenant_id: userId }],
-        }).sort({ updatedAt: -1 }); 
+        }).sort({ updatedAt: 1 })
     } catch (err) {
         console.log(err)
     }
