@@ -33,8 +33,30 @@ const getRooms = async (req, res, next) => {
         console.log(err)
     }
 
+    let expanded_rooms
+    expanded_rooms = await Promise.all(
+        rooms?.map(async (room) => {
+            const meta = {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${req.body.token}`,
+            }
+            const headers = new Headers(meta)
+            const user = await fetch(
+                `${process.env.MAIN_BACKEND_URL}/api/users/${room.tenant_id}`,
+                {
+                    headers: headers,
+                }
+            )
+            const user_data = await user.json()
+
+            return { ...room._doc, user: user_data }
+            // console.log(user_data)
+        })
+    )
+
     // Now, you need to iterate through the 'rooms' array to get each room's '_id'.
-    const roomIds = rooms.map((room) => room._id)
+    const roomIds = expanded_rooms.map((room) => room._id)
 
     // Use the 'roomIds' array to find messages for each room and count the messages.
     const roomMessageCounts = await Promise.all(
@@ -47,7 +69,7 @@ const getRooms = async (req, res, next) => {
     )
 
     // Filter rooms with message counts greater than 0.
-    const roomsWithMessageCounts = rooms.filter((room) => {
+    const roomsWithMessageCounts = expanded_rooms?.filter((room) => {
         const roomMessageCount = roomMessageCounts.find((item) =>
             item.roomId.equals(room._id)
         )
@@ -55,9 +77,7 @@ const getRooms = async (req, res, next) => {
     })
 
     res.json({
-        rooms: roomsWithMessageCounts.map((room) =>
-            room.toObject({ getters: true })
-        ),
+        rooms: roomsWithMessageCounts,
     })
 }
 
